@@ -18,4 +18,5 @@
 
 ## 画面イメージ
 
-![家計簿](https://github.com/yosimutu-tech/kakeibo-app/blob/main/IMG_4212.pngURL)
+![家計簿](https://raw.githubusercontent.com/yosimutu-tech/kakeibo-app/main/IMG_4212.png)
+
