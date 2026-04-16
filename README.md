@@ -20,5 +20,5 @@
 
 ![家計簿](https://raw.githubusercontent.com/yosimutu-tech/kakeibo-app/main/IMG_4212.png)
 
-![]()
+![家計簿](https://raw.githubusercontent.com/yosimutu-tech/kakeibo-app/main/IMG_4216.png)
 
