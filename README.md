@@ -18,4 +18,4 @@
 
 ## 画面イメージ
 
-![家計簿](ここに画像URL)
+![家計簿](https://github.com/yosimutu-tech/kakeibo-app/blob/main/IMG_4212.pngURL)
