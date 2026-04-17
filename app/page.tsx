@@ -6,20 +6,23 @@ export default function Home() {
   const [amount, setAmount] = useState("");
   const [text, setText] = useState("");
   const [items, setItems] = useState([]);
+  const handleDelete = (index: number) => {
+  setItems(items.filter((_, i) => i !== index));
+};
 
-  const handleAdd = () => {
-    if (!amount || !text) return;
+const handleAdd = () => {
+  if (!amount || !text) return;
 
-    const newItem = {
-      type,
-      amount: Number(amount),
-      text,
-    };
-
-    setItems([...items, newItem]);
-    setAmount("");
-    setText("");
+  const newItem = {
+    type,
+    amount: Number(amount),
+    text,
   };
+
+  setItems([...items, newItem]);
+  setAmount("");
+  setText("");
+};
 
   const total = items.reduce((sum, item) => {
     return item.type === "income"
