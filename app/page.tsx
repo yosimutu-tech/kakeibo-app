@@ -72,7 +72,7 @@ import {
   getCurrentYearMonth,
   getYearMonthLabel,
   addMonths,
-} from "@/hooks/useKakeibo";
+} from "../usekakeibo";
 
 // ============================================================
 // カテゴリバッジ
