@@ -54,15 +54,22 @@ const handleAdd = () => {
       <button onClick={handleAdd}>追加</button>
 
       <h2>合計: {total}円</h2>
+<ul>
+  {items.map((item, i) => (
+    <li key={i}>
+      {item.type === "income" ? "収入" : "支出"}：
+      {item.text}（{item.amount}円）
 
-      <ul>
-        {items.map((item, i) => (
-          <li key={i}>
-            {item.type === "income" ? "収入" : "支出"}：
-            {item.text}（{item.amount}円）
-          </li>
-        ))}
-      </ul>
+      <button onClick={() => handleDelete(i)}>
+        削除
+      </button>
+
+    </li>
+  ))}
+</ul>
+
+      
+      
     </div>
   );
 }
