@@ -16,7 +16,7 @@
 ## 制作背景
 家計簿が続かない人でも使いやすい設計を意識しました。
 
-## 画面イメージ
+## 画面イメージa
 
 ![家計簿](https://raw.githubusercontent.com/yosimutu-tech/kakeibo-app/main/IMG_4071.png)
 
