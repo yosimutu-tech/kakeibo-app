@@ -29,7 +29,7 @@ export default function Home() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>家計簿アプリ</h1>
+      <h1>家計簿アプリ!</h1>
 
       <select value={type} onChange={(e) => setType(e.target.value)}>
         <option value="income">収入</option>
