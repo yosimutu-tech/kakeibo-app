@@ -1,10 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [amount, setAmount] = useState("");
   const [text, setText] = useState("");
   const [items, setItems] = useState<{amount: number; text: string}[]>([]);
+
+  // 初回読み込み（保存データ取得）
+  useEffect(() => {
+    const saved = localStorage.getItem("kakeibo");
+    if (saved) {
+      setItems(JSON.parse(saved));
+    }
+  }, []);
+
+  // データ保存
+  useEffect(() => {
+    localStorage.setItem("kakeibo", JSON.stringify(items));
+  }, [items]);
 
   const addItem = () => {
     if (!amount || !text) return;
