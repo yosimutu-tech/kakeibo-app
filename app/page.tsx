@@ -7,6 +7,7 @@
  * - 編集ダイアログ: 金額・カテゴリ・メモ・type を変更可能
  */
 "use client";
+
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
