@@ -6,7 +6,6 @@ import { nanoid } from "nanoid";
 // ============================================================
 
 export type TransactionType = "income" | "expense";
-
 // カテゴリ定義（収入・支出それぞれ）
 export const CATEGORIES: Record<TransactionType, string[]> = {
   income: ["給与", "副収入", "賞与", "投資", "その他収入"],
