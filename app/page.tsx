@@ -60,10 +60,11 @@ export default function Home() {
       </select>
 
       <input
-        placeholder="金額"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
+  placeholder="金額"
+  value={amount}
+  onChange={(e) => setAmount(e.target.value)}
+  style={{ margin: "5px" }}
+/>
 
       <input
         placeholder="内容"
