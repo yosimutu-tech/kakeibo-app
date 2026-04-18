@@ -7,6 +7,7 @@ export default function Home() {
   const [text, setText] = useState("");
   const [items, setItems] = useState<any[]>([]);
 
+  // 🔵 読み込み
   useEffect(() => {
     const saved = localStorage.getItem("kakeibo");
     if (saved) {
@@ -14,6 +15,7 @@ export default function Home() {
     }
   }, []);
 
+  // 🔵 追加
   const handleAdd = () => {
     if (!amount || !text) return;
 
@@ -33,12 +35,20 @@ export default function Home() {
     setText("");
   };
 
+  // 🔵 削除
   const handleDelete = (id: number) => {
     const updatedItems = items.filter((item) => item.id !== id);
     setItems(updatedItems);
     localStorage.setItem("kakeibo", JSON.stringify(updatedItems));
   };
 
+  // 🔴 全削除（今回追加）
+  const handleClearAll = () => {
+    setItems([]);
+    localStorage.removeItem("kakeibo");
+  };
+
+  // 🔵 合計
   const total = items.reduce((sum, item) => {
     return item.type === "income"
       ? sum + item.amount
@@ -111,12 +121,29 @@ export default function Home() {
         style={{
           textAlign: "center",
           fontSize: 24,
-          marginBottom: 20,
+          marginBottom: 10,
           color: total >= 0 ? "green" : "red",
         }}
       >
         合計: {total}円
       </div>
+
+      {/* 🔴 全削除ボタン */}
+      <button
+        onClick={handleClearAll}
+        style={{
+          width: "100%",
+          padding: 12,
+          marginBottom: 20,
+          background: "#ff6666",
+          color: "white",
+          border: "none",
+          borderRadius: 8,
+          fontSize: 16,
+        }}
+      >
+        全て削除
+      </button>
 
       {/* リスト */}
       <div>
