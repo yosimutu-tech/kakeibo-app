@@ -7,7 +7,7 @@ export default function Home() {
   const [text, setText] = useState("");
   const [items, setItems] = useState<any[]>([]);
 
-  // 🔹 初回読み込み（保存データを読み込む）
+  // 🔹 初回読み込み
   useEffect(() => {
     const saved = localStorage.getItem("kakeibo");
     if (saved) {
@@ -15,7 +15,7 @@ export default function Home() {
     }
   }, []);
 
-  // 🔹 追加処理
+  // 🔹 追加
   const handleAdd = () => {
     if (!amount || !text) return;
 
@@ -23,7 +23,7 @@ export default function Home() {
       type,
       amount: Number(amount),
       text,
-      date: new Date().toLocaleDateString(), // ←ここに追加
+      date: new Date().toLocaleDateString(),
     };
 
     const updatedItems = [...items, newItem];
@@ -35,7 +35,7 @@ export default function Home() {
     setText("");
   };
 
-  // 🔹 削除処理
+  // 🔹 削除
   const handleDelete = (index: number) => {
     const updatedItems = items.filter((_, i) => i !== index);
 
@@ -43,7 +43,7 @@ export default function Home() {
     localStorage.setItem("kakeibo", JSON.stringify(updatedItems));
   };
 
-  // 🔹 合計計算
+  // 🔹 合計
   const total = items.reduce((sum, item) => {
     return item.type === "income"
       ? sum + item.amount
@@ -60,32 +60,51 @@ export default function Home() {
       </select>
 
       <input
-  placeholder="金額"
-  value={amount}
-  onChange={(e) => setAmount(e.target.value)}
-  style={{ margin: "5px" }}
-/>
+        placeholder="金額"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        style={{ margin: 5 }}
+      />
 
       <input
         placeholder="内容"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        style={{ margin: 5 }}
       />
 
-      <button onClick={handleAdd}>追加</button>
+      <button onClick={handleAdd} style={{ marginLeft: 5 }}>
+        追加
+      </button>
 
-      <h2>合計: {total}円</h2>
+      <h2
+        style={{
+          color: total >= 0 ? "green" : "red",
+        }}
+      >
+        合計: {total}円
+      </h2>
 
-      <ul>
+      <ul style={{ padding: 0 }}>
         {items.map((item, i) => (
-          <li key={i} style={{ color: item.type === "income" ? "green" : "red" }}>
-            {item.date}
-            {item.type === "income" ? "収入" : "支出"}：
-            {item.text}（{item.amount}円）
+          <li
+            key={i}
+            style={{
+              color: item.type === "income" ? "green" : "red",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 10,
+              listStyle: "none",
+            }}
+          >
+            <span>
+              {item.date}　
+              {item.type === "income" ? "収入" : "支出"}：
+              {item.text}（{item.amount}円）
+            </span>
 
-            <button onClick={handleAdd} style={{ marginLeft: 5 }}>
-　　　　　　　　　追加
-　　　　　　　　</button>
+            <button onClick={() => handleDelete(i)}>
               削除
             </button>
           </li>
