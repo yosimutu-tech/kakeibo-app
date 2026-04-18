@@ -89,8 +89,8 @@ export default function Home() {
 
       <ul style={{ padding: 0 }}>
         {[...items].reverse().map((item, i) => (
-          <li
-            key={i}
+          (item)
+　　　　　　　key={item.id}
             style={{
               color: item.type === "income" ? "green" : "red",
               display: "flex",
