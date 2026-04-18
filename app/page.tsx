@@ -1,14 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Pie } from "react-chartjs-2";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 type Item = {
   id: number;
@@ -26,11 +17,13 @@ export default function Home() {
   const [category, setCategory] = useState("食費");
   const [items, setItems] = useState<Item[]>([]);
 
+  // 読み込み
   useEffect(() => {
     const saved = localStorage.getItem("kakeibo");
     if (saved) setItems(JSON.parse(saved));
   }, []);
 
+  // 追加
   const handleAdd = () => {
     if (!amount || !text) return;
 
@@ -51,12 +44,14 @@ export default function Home() {
     setText("");
   };
 
+  // 削除
   const handleDelete = (id: number) => {
     const updated = items.filter((i) => i.id !== id);
     setItems(updated);
     localStorage.setItem("kakeibo", JSON.stringify(updated));
   };
 
+  // 全削除
   const handleClear = () => {
     setItems([]);
     localStorage.removeItem("kakeibo");
@@ -78,37 +73,19 @@ export default function Home() {
     }
   });
 
-  // 🎨 パステルカラー
-  const pastelColors = [
-    "#FFB3BA",
-    "#FFDFBA",
-    "#FFFFBA",
-    "#BAFFC9",
-    "#BAE1FF",
-  ];
-
-  // 📊 グラフデータ
-  const chartData = {
-    labels: Object.keys(categoryTotals),
-    datasets: [
-      {
-        data: Object.values(categoryTotals),
-        backgroundColor: pastelColors,
-      },
-    ],
-  };
+  const max = Math.max(...Object.values(categoryTotals), 1);
 
   return (
-    <div style={{ padding: 20, background: "#f9f9f9" }}>
+    <div style={{ padding: 20, background: "#f7f7fb", minHeight: "100vh" }}>
       <h1 style={{ textAlign: "center" }}>家計簿アプリ</h1>
 
-      {/* 入力 */}
+      {/* 入力エリア */}
       <div
         style={{
-          background: "#fff",
+          background: "#ffffff",
           padding: 20,
-          borderRadius: 10,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          borderRadius: 12,
+          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
         }}
       >
         <select
@@ -116,6 +93,7 @@ export default function Home() {
           onChange={(e) =>
             setType(e.target.value as "income" | "expense")
           }
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
         >
           <option value="income">収入</option>
           <option value="expense">支出</option>
@@ -125,18 +103,21 @@ export default function Home() {
           placeholder="金額"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
         />
 
         <input
           placeholder="内容"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
         />
 
         {type === "expense" && (
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            style={{ width: "100%", padding: 10, marginBottom: 10 }}
           >
             <option>食費</option>
             <option>交通費</option>
@@ -151,9 +132,11 @@ export default function Home() {
           style={{
             background: "#77dd77",
             color: "white",
-            borderRadius: 8,
-            padding: 10,
+            borderRadius: 10,
+            padding: "15px",
             width: "100%",
+            fontSize: "18px",
+            border: "none",
           }}
         >
           追加する
@@ -164,47 +147,82 @@ export default function Home() {
       <h2
         style={{
           textAlign: "center",
-          color: total >= 0 ? "#77dd77" : "#ff6961",
+          color: total >= 0 ? "#77dd77" : "#ff8fa3",
+          marginTop: 20,
         }}
       >
         合計: {total}円
       </h2>
 
-      {/* 📊 グラフ */}
-      <div style={{ maxWidth: 300, margin: "0 auto" }}>
-        <Pie data={chartData} />
-      </div>
+      {/* グラフ（バー） */}
+      <h3>カテゴリ別支出</h3>
+      {Object.entries(categoryTotals).map(([cat, amount]) => (
+        <div key={cat} style={{ marginBottom: 10 }}>
+          <div>{cat}: {amount}円</div>
+          <div
+            style={{
+              height: 20,
+              width: `${(amount / max) * 100}%`,
+              background: "#bae1ff",
+              borderRadius: 10,
+            }}
+          />
+        </div>
+      ))}
 
       {/* 一覧 */}
-      <ul>
+      <ul style={{ marginTop: 20 }}>
         {[...items].reverse().map((item) => (
-          <li key={item.id}>
-            <span
+          <li
+            key={item.id}
+            style={{
+              background: "#fff",
+              padding: 10,
+              borderRadius: 10,
+              marginBottom: 10,
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            }}
+          >
+            <div
               style={{
                 color:
                   item.type === "income"
                     ? "#77dd77"
-                    : "#ff6961",
+                    : "#ff8fa3",
               }}
             >
               {item.date} {item.text} ({item.amount}円)
-            </span>
+              {item.type === "expense" && `【${item.category}】`}
+            </div>
 
-            <button onClick={() => handleDelete(item.id)}>
+            <button
+              onClick={() => handleDelete(item.id)}
+              style={{
+                marginTop: 5,
+                background: "#ddd",
+                border: "none",
+                padding: "5px 10px",
+                borderRadius: 5,
+              }}
+            >
               削除
             </button>
           </li>
         ))}
       </ul>
 
+      {/* 全削除 */}
       <button
         onClick={handleClear}
         style={{
-          background: "#ff6961",
+          background: "#ff8fa3",
           color: "white",
           width: "100%",
-          padding: 10,
-          borderRadius: 8,
+          padding: "15px",
+          borderRadius: 10,
+          fontSize: "18px",
+          border: "none",
+          marginTop: 20,
         }}
       >
         すべて削除
