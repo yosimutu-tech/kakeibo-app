@@ -1,29 +1,48 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [type, setType] = useState("income");
   const [amount, setAmount] = useState("");
   const [text, setText] = useState("");
-  const [items, setItems] = useState([]);
-  const handleDelete = (index: number) => {
-  setItems(items.filter((_, i) => i !== index));
-};
+  const [items, setItems] = useState<any[]>([]);
 
-const handleAdd = () => {
-  if (!amount || !text) return;
+  // 🔹 初回読み込み（保存データを読み込む）
+  useEffect(() => {
+    const saved = localStorage.getItem("kakeibo");
+    if (saved) {
+      setItems(JSON.parse(saved));
+    }
+  }, []);
 
-  const newItem = {
-    type,
-    amount: Number(amount),
-    text,
+  // 🔹 追加処理
+  const handleAdd = () => {
+    if (!amount || !text) return;
+
+    const newItem = {
+      type,
+      amount: Number(amount),
+      text,
+    };
+
+    const updatedItems = [...items, newItem];
+
+    setItems(updatedItems);
+    localStorage.setItem("kakeibo", JSON.stringify(updatedItems));
+
+    setAmount("");
+    setText("");
   };
 
-  setItems([...items, newItem]);
-  setAmount("");
-  setText("");
-};
+  // 🔹 削除処理
+  const handleDelete = (index: number) => {
+    const updatedItems = items.filter((_, i) => i !== index);
 
+    setItems(updatedItems);
+    localStorage.setItem("kakeibo", JSON.stringify(updatedItems));
+  };
+
+  // 🔹 合計計算
   const total = items.reduce((sum, item) => {
     return item.type === "income"
       ? sum + item.amount
@@ -54,22 +73,19 @@ const handleAdd = () => {
       <button onClick={handleAdd}>追加</button>
 
       <h2>合計: {total}円</h2>
-<ul>
-  {items.map((item, i) => (
-    <li key={i}>
-      {item.type === "income" ? "収入" : "支出"}：
-      {item.text}（{item.amount}円）
 
-      <button onClick={() => handleDelete(i)}>
-        削除
-      </button>
+      <ul>
+        {items.map((item, i) => (
+          <li key={i}>
+            {item.type === "income" ? "収入" : "支出"}：
+            {item.text}（{item.amount}円）
 
-    </li>
-  ))}
-</ul>
-
-      
-      
+            <button onClick={() => handleDelete(i)}>
+              削除
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
