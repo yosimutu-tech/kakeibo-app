@@ -57,6 +57,32 @@ export default function Home() {
     localStorage.removeItem("kakeibo");
   };
 
+  // 🔥 バックアップ保存
+  const handleExport = () => {
+    const dataStr = JSON.stringify(items, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "kakeibo_backup.json";
+    a.click();
+  };
+
+  // 🔥 復元
+  const handleImport = (e: any) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = JSON.parse(reader.result as string);
+      setItems(data);
+      localStorage.setItem("kakeibo", JSON.stringify(data));
+    };
+    reader.readAsText(file);
+  };
+
   // 合計
   const total = items.reduce((sum, item) => {
     return item.type === "income"
@@ -79,20 +105,16 @@ export default function Home() {
     <div style={{ padding: 20, background: "#f7f7fb", minHeight: "100vh" }}>
       <h1 style={{ textAlign: "center" }}>家計簿アプリ</h1>
 
-      {/* 入力エリア */}
-      <div
-        style={{
-          background: "#ffffff",
-          padding: 20,
-          borderRadius: 12,
-          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-        }}
-      >
+      {/* 入力 */}
+      <div style={{
+        background: "#fff",
+        padding: 20,
+        borderRadius: 12,
+        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+      }}>
         <select
           value={type}
-          onChange={(e) =>
-            setType(e.target.value as "income" | "expense")
-          }
+          onChange={(e) => setType(e.target.value as any)}
           style={{ width: "100%", padding: 10, marginBottom: 10 }}
         >
           <option value="income">収入</option>
@@ -132,10 +154,10 @@ export default function Home() {
           style={{
             background: "#77dd77",
             color: "white",
-            borderRadius: 10,
-            padding: "15px",
+            padding: 15,
             width: "100%",
-            fontSize: "18px",
+            borderRadius: 10,
+            fontSize: 18,
             border: "none",
           }}
         >
@@ -144,72 +166,72 @@ export default function Home() {
       </div>
 
       {/* 合計 */}
-      <h2
-        style={{
-          textAlign: "center",
-          color: total >= 0 ? "#77dd77" : "#ff8fa3",
-          marginTop: 20,
-        }}
-      >
+      <h2 style={{
+        textAlign: "center",
+        color: total >= 0 ? "#77dd77" : "#ff8fa3",
+        marginTop: 20,
+      }}>
         合計: {total}円
       </h2>
 
-      {/* グラフ（バー） */}
+      {/* グラフ */}
       <h3>カテゴリ別支出</h3>
       {Object.entries(categoryTotals).map(([cat, amount]) => (
         <div key={cat} style={{ marginBottom: 10 }}>
           <div>{cat}: {amount}円</div>
-          <div
-            style={{
-              height: 20,
-              width: `${(amount / max) * 100}%`,
-              background: "#bae1ff",
-              borderRadius: 10,
-            }}
-          />
+          <div style={{
+            height: 20,
+            width: `${(amount / max) * 100}%`,
+            background: "#bae1ff",
+            borderRadius: 10,
+          }} />
         </div>
       ))}
 
       {/* 一覧 */}
       <ul style={{ marginTop: 20 }}>
         {[...items].reverse().map((item) => (
-          <li
-            key={item.id}
-            style={{
-              background: "#fff",
-              padding: 10,
-              borderRadius: 10,
-              marginBottom: 10,
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-            }}
-          >
-            <div
-              style={{
-                color:
-                  item.type === "income"
-                    ? "#77dd77"
-                    : "#ff8fa3",
-              }}
-            >
+          <li key={item.id} style={{
+            background: "#fff",
+            padding: 10,
+            borderRadius: 10,
+            marginBottom: 10,
+          }}>
+            <div style={{
+              color: item.type === "income" ? "#77dd77" : "#ff8fa3",
+            }}>
               {item.date} {item.text} ({item.amount}円)
               {item.type === "expense" && `【${item.category}】`}
             </div>
 
-            <button
-              onClick={() => handleDelete(item.id)}
-              style={{
-                marginTop: 5,
-                background: "#ddd",
-                border: "none",
-                padding: "5px 10px",
-                borderRadius: 5,
-              }}
-            >
+            <button onClick={() => handleDelete(item.id)}>
               削除
             </button>
           </li>
         ))}
       </ul>
+
+      {/* 🔥 バックアップ */}
+      <button
+        onClick={handleExport}
+        style={{
+          background: "#bae1ff",
+          padding: 15,
+          width: "100%",
+          borderRadius: 10,
+          border: "none",
+          marginTop: 10,
+        }}
+      >
+        データ保存（バックアップ）
+      </button>
+
+      <input
+        type="file"
+        accept="application/json"
+        onChange={handleImport}
+        style={{ marginTop: 10 }}
+      />
 
       {/* 全削除 */}
       <button
@@ -217,10 +239,9 @@ export default function Home() {
         style={{
           background: "#ff8fa3",
           color: "white",
+          padding: 15,
           width: "100%",
-          padding: "15px",
           borderRadius: 10,
-          fontSize: "18px",
           border: "none",
           marginTop: 20,
         }}
