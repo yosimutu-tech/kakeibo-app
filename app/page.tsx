@@ -20,6 +20,7 @@ export default function Home() {
     if (!amount || !text) return;
 
     const newItem = {
+      id: Date.now(), // ←これ追加
       type,
       amount: Number(amount),
       text,
