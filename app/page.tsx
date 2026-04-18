@@ -23,6 +23,7 @@ export default function Home() {
       type,
       amount: Number(amount),
       text,
+      date: new Date().toLocaleDateString(), // ←ここに追加
     };
 
     const updatedItems = [...items, newItem];
