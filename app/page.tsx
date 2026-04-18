@@ -83,7 +83,9 @@ export default function Home() {
             {item.type === "income" ? "収入" : "支出"}：
             {item.text}（{item.amount}円）
 
-            <button onClick={() => handleDelete(i)}>
+            <button onClick={handleAdd} style={{ marginLeft: 5 }}>
+　　　　　　　　　追加
+　　　　　　　　</button>
               削除
             </button>
           </li>
