@@ -7,7 +7,7 @@ export default function Home() {
   const [text, setText] = useState("");
   const [items, setItems] = useState<any[]>([]);
 
-  // 🔵 データ読み込み
+  // 🔵 読み込み
   useEffect(() => {
     const saved = localStorage.getItem("kakeibo");
     if (saved) {
@@ -53,30 +53,43 @@ export default function Home() {
     <div style={{ padding: 20 }}>
       <h1>家計簿アプリ！</h1>
 
-      <select value={type} onChange={(e) => setType(e.target.value)}>
-        <option value="income">収入</option>
-        <option value="expense">支出</option>
-      </select>
+      <div style={{ marginBottom: 10 }}>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          style={{ padding: 10, marginRight: 5 }}
+        >
+          <option value="income">収入</option>
+          <option value="expense">支出</option>
+        </select>
 
-      <input
-        placeholder="金額"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
+        <input
+          placeholder="金額"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          style={{ padding: 10, marginRight: 5 }}
+        />
 
-      <input
-        placeholder="内容"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
+        <input
+          placeholder="内容"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          style={{ padding: 10, marginRight: 5 }}
+        />
 
-      <button onClick={handleAdd}>追加</button>
+        <button
+          onClick={handleAdd}
+          style={{ padding: "10px 20px", fontSize: 16 }}
+        >
+          追加
+        </button>
+      </div>
 
       <h2 style={{ color: total >= 0 ? "green" : "red" }}>
         合計: {total}円
       </h2>
 
-      <ul>
+      <ul style={{ padding: 0 }}>
         {[...items].reverse().map((item) => (
           <li
             key={item.id}
@@ -91,10 +104,14 @@ export default function Home() {
           >
             <span>
               {item.date}{" "}
-              {item.type === "income" ? "収入" : "支出"}：{item.text}（{item.amount}円）
+              {item.type === "income" ? "収入" : "支出"}：
+              {item.text}（{item.amount}円）
             </span>
 
-            <button onClick={() => handleDelete(item.id)}>
+            <button
+              onClick={() => handleDelete(item.id)}
+              style={{ padding: "6px 12px" }}
+            >
               削除
             </button>
           </li>
