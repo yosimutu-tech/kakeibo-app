@@ -24,6 +24,7 @@ export default function Home() {
       amount: Number(amount),
       text,
       date: new Date().toLocaleDateString(),
+      category: "食費" 
     };
 
     const updatedItems = [...items, newItem];
@@ -86,7 +87,7 @@ export default function Home() {
       </h2>
 
       <ul style={{ padding: 0 }}>
-        {items.map((item, i) => (
+        {[...items].reverse().map((item, i) => (
           <li
             key={i}
             style={{
