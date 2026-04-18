@@ -7,7 +7,6 @@ export default function Home() {
   const [text, setText] = useState("");
   const [items, setItems] = useState<any[]>([]);
 
-  // 🔵 読み込み
   useEffect(() => {
     const saved = localStorage.getItem("kakeibo");
     if (saved) {
@@ -15,7 +14,6 @@ export default function Home() {
     }
   }, []);
 
-  // 🔵 追加
   const handleAdd = () => {
     if (!amount || !text) return;
 
@@ -35,14 +33,12 @@ export default function Home() {
     setText("");
   };
 
-  // 🔵 削除
   const handleDelete = (id: number) => {
     const updatedItems = items.filter((item) => item.id !== id);
     setItems(updatedItems);
     localStorage.setItem("kakeibo", JSON.stringify(updatedItems));
   };
 
-  // 🔵 合計
   const total = items.reduce((sum, item) => {
     return item.type === "income"
       ? sum + item.amount
@@ -50,14 +46,31 @@ export default function Home() {
   }, 0);
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>家計簿アプリ！</h1>
+    <div
+      style={{
+        maxWidth: 400,
+        margin: "0 auto",
+        padding: 20,
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ textAlign: "center", marginBottom: 20 }}>
+        家計簿アプリ
+      </h1>
 
-      <div style={{ marginBottom: 10 }}>
+      {/* 入力エリア */}
+      <div
+        style={{
+          background: "#f5f5f5",
+          padding: 15,
+          borderRadius: 10,
+          marginBottom: 20,
+        }}
+      >
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          style={{ padding: 10, marginRight: 5 }}
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
         >
           <option value="income">収入</option>
           <option value="expense">支出</option>
@@ -67,56 +80,87 @@ export default function Home() {
           placeholder="金額"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          style={{ padding: 10, marginRight: 5 }}
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
         />
 
         <input
           placeholder="内容"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          style={{ padding: 10, marginRight: 5 }}
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
         />
 
         <button
           onClick={handleAdd}
-          style={{ padding: "10px 20px", fontSize: 16 }}
+          style={{
+            width: "100%",
+            padding: 12,
+            background: "#4CAF50",
+            color: "white",
+            border: "none",
+            borderRadius: 8,
+            fontSize: 16,
+          }}
         >
           追加
         </button>
       </div>
 
-      <h2 style={{ color: total >= 0 ? "green" : "red" }}>
+      {/* 合計 */}
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: 24,
+          marginBottom: 20,
+          color: total >= 0 ? "green" : "red",
+        }}
+      >
         合計: {total}円
-      </h2>
+      </div>
 
-      <ul style={{ padding: 0 }}>
+      {/* リスト */}
+      <div>
         {[...items].reverse().map((item) => (
-          <li
+          <div
             key={item.id}
             style={{
-              color: item.type === "income" ? "green" : "red",
+              background: "white",
+              padding: 12,
+              borderRadius: 10,
+              marginBottom: 10,
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: 10,
-              listStyle: "none",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
             }}
           >
-            <span>
-              {item.date}{" "}
-              {item.type === "income" ? "収入" : "支出"}：
-              {item.text}（{item.amount}円）
-            </span>
+            <div
+              style={{
+                color: item.type === "income" ? "green" : "red",
+              }}
+            >
+              <div style={{ fontSize: 12 }}>{item.date}</div>
+              <div>
+                {item.type === "income" ? "収入" : "支出"}：
+                {item.text}
+              </div>
+              <div>{item.amount}円</div>
+            </div>
 
             <button
               onClick={() => handleDelete(item.id)}
-              style={{ padding: "6px 12px" }}
+              style={{
+                background: "#ddd",
+                border: "none",
+                padding: "6px 10px",
+                borderRadius: 6,
+              }}
             >
               削除
             </button>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
