@@ -106,7 +106,7 @@ export default function Home() {
               {item.text}（{item.amount}円）
             </span>
 
-            <button onClick={() => handleDelete(i)}>
+            <button onClick={() => handleDelete(item.id)}>
               削除
             </button>
           </li>
