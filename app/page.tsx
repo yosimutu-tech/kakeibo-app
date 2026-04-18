@@ -1,5 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Pie } from "react-chartjs-2";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 type Item = {
   id: number;
@@ -17,15 +26,11 @@ export default function Home() {
   const [category, setCategory] = useState("食費");
   const [items, setItems] = useState<Item[]>([]);
 
-  // 🔹 読み込み
   useEffect(() => {
     const saved = localStorage.getItem("kakeibo");
-    if (saved) {
-      setItems(JSON.parse(saved));
-    }
+    if (saved) setItems(JSON.parse(saved));
   }, []);
 
-  // 🔹 追加
   const handleAdd = () => {
     if (!amount || !text) return;
 
@@ -46,44 +51,66 @@ export default function Home() {
     setText("");
   };
 
-  // 🔹 削除
   const handleDelete = (id: number) => {
-    const updated = items.filter((item) => item.id !== id);
+    const updated = items.filter((i) => i.id !== id);
     setItems(updated);
     localStorage.setItem("kakeibo", JSON.stringify(updated));
   };
 
-  // 🔹 全削除
   const handleClear = () => {
     setItems([]);
     localStorage.removeItem("kakeibo");
   };
 
-  // 🔹 合計
+  // 合計
   const total = items.reduce((sum, item) => {
     return item.type === "income"
       ? sum + item.amount
       : sum - item.amount;
   }, 0);
 
-  // 🔥 カテゴリ別合計（ここが今回のメイン！）
+  // カテゴリ集計
   const categoryTotals: { [key: string]: number } = {};
-
   items.forEach((item) => {
     if (item.type === "expense") {
-      if (!categoryTotals[item.category]) {
-        categoryTotals[item.category] = 0;
-      }
-      categoryTotals[item.category] += item.amount;
+      categoryTotals[item.category] =
+        (categoryTotals[item.category] || 0) + item.amount;
     }
   });
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>家計簿アプリ</h1>
+  // 🎨 パステルカラー
+  const pastelColors = [
+    "#FFB3BA",
+    "#FFDFBA",
+    "#FFFFBA",
+    "#BAFFC9",
+    "#BAE1FF",
+  ];
 
-      {/* 入力エリア */}
-      <div style={{ marginBottom: 20 }}>
+  // 📊 グラフデータ
+  const chartData = {
+    labels: Object.keys(categoryTotals),
+    datasets: [
+      {
+        data: Object.values(categoryTotals),
+        backgroundColor: pastelColors,
+      },
+    ],
+  };
+
+  return (
+    <div style={{ padding: 20, background: "#f9f9f9" }}>
+      <h1 style={{ textAlign: "center" }}>家計簿アプリ</h1>
+
+      {/* 入力 */}
+      <div
+        style={{
+          background: "#fff",
+          padding: 20,
+          borderRadius: 10,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        }}
+      >
         <select
           value={type}
           onChange={(e) =>
@@ -94,15 +121,11 @@ export default function Home() {
           <option value="expense">支出</option>
         </select>
 
-        <br />
-
         <input
           placeholder="金額"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-
-        <br />
 
         <input
           placeholder="内容"
@@ -110,9 +133,6 @@ export default function Home() {
           onChange={(e) => setText(e.target.value)}
         />
 
-        <br />
-
-        {/* 🔥 カテゴリ */}
         {type === "expense" && (
           <select
             value={category}
@@ -126,25 +146,34 @@ export default function Home() {
           </select>
         )}
 
-        <br />
-
-        <button onClick={handleAdd}>追加する</button>
+        <button
+          onClick={handleAdd}
+          style={{
+            background: "#77dd77",
+            color: "white",
+            borderRadius: 8,
+            padding: 10,
+            width: "100%",
+          }}
+        >
+          追加する
+        </button>
       </div>
 
       {/* 合計 */}
-      <h2 style={{ color: total >= 0 ? "green" : "red" }}>
+      <h2
+        style={{
+          textAlign: "center",
+          color: total >= 0 ? "#77dd77" : "#ff6961",
+        }}
+      >
         合計: {total}円
       </h2>
 
-      {/* 🔥 カテゴリ別合計 */}
-      <h3>カテゴリ別支出</h3>
-      <ul>
-        {Object.entries(categoryTotals).map(([cat, amount]) => (
-          <li key={cat}>
-            {cat}: {amount}円
-          </li>
-        ))}
-      </ul>
+      {/* 📊 グラフ */}
+      <div style={{ maxWidth: 300, margin: "0 auto" }}>
+        <Pie data={chartData} />
+      </div>
 
       {/* 一覧 */}
       <ul>
@@ -152,13 +181,13 @@ export default function Home() {
           <li key={item.id}>
             <span
               style={{
-                color: item.type === "income" ? "green" : "red",
+                color:
+                  item.type === "income"
+                    ? "#77dd77"
+                    : "#ff6961",
               }}
             >
-              {item.date}{" "}
-              {item.type === "income" ? "収入" : "支出"}：
-              {item.text} ({item.amount}円)
-              {item.type === "expense" && `【${item.category}】`}
+              {item.date} {item.text} ({item.amount}円)
             </span>
 
             <button onClick={() => handleDelete(item.id)}>
@@ -168,13 +197,14 @@ export default function Home() {
         ))}
       </ul>
 
-      {/* 全削除 */}
       <button
         onClick={handleClear}
         style={{
-          background: "red",
+          background: "#ff6961",
           color: "white",
-          marginTop: 20,
+          width: "100%",
+          padding: 10,
+          borderRadius: 8,
         }}
       >
         すべて削除
