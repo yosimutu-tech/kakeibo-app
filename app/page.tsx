@@ -5,9 +5,10 @@ export default function Home() {
   const [type, setType] = useState("income");
   const [amount, setAmount] = useState("");
   const [text, setText] = useState("");
+  const [category, setCategory] = useState("食費"); // ←追加
   const [items, setItems] = useState<any[]>([]);
 
-  // 🔵 読み込み
+  // 読み込み
   useEffect(() => {
     const saved = localStorage.getItem("kakeibo");
     if (saved) {
@@ -15,7 +16,7 @@ export default function Home() {
     }
   }, []);
 
-  // 🔵 追加
+  // 追加
   const handleAdd = () => {
     if (!amount || !text) return;
 
@@ -24,6 +25,7 @@ export default function Home() {
       type,
       amount: Number(amount),
       text,
+      category, // ←追加
       date: new Date().toLocaleDateString(),
     };
 
@@ -35,20 +37,20 @@ export default function Home() {
     setText("");
   };
 
-  // 🔵 削除
+  // 削除
   const handleDelete = (id: number) => {
     const updatedItems = items.filter((item) => item.id !== id);
     setItems(updatedItems);
     localStorage.setItem("kakeibo", JSON.stringify(updatedItems));
   };
 
-  // 🔴 全削除（今回追加）
+  // 全削除
   const handleClearAll = () => {
     setItems([]);
     localStorage.removeItem("kakeibo");
   };
 
-  // 🔵 合計
+  // 合計
   const total = items.reduce((sum, item) => {
     return item.type === "income"
       ? sum + item.amount
@@ -56,27 +58,11 @@ export default function Home() {
   }, 0);
 
   return (
-    <div
-      style={{
-        maxWidth: 400,
-        margin: "0 auto",
-        padding: 20,
-        fontFamily: "sans-serif",
-      }}
-    >
-      <h1 style={{ textAlign: "center", marginBottom: 20 }}>
-        家計簿アプリ
-      </h1>
+    <div style={{ maxWidth: 400, margin: "0 auto", padding: 20 }}>
+      <h1 style={{ textAlign: "center" }}>家計簿アプリ</h1>
 
-      {/* 入力エリア */}
-      <div
-        style={{
-          background: "#f5f5f5",
-          padding: 15,
-          borderRadius: 10,
-          marginBottom: 20,
-        }}
-      >
+      {/* 入力 */}
+      <div style={{ background: "#f5f5f5", padding: 15, borderRadius: 10 }}>
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
@@ -84,6 +70,19 @@ export default function Home() {
         >
           <option value="income">収入</option>
           <option value="expense">支出</option>
+        </select>
+
+        {/* 🔴 カテゴリ選択 */}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          style={{ width: "100%", padding: 10, marginBottom: 10 }}
+        >
+          <option>食費</option>
+          <option>日用品</option>
+          <option>交通費</option>
+          <option>趣味</option>
+          <option>その他</option>
         </select>
 
         <input
@@ -105,11 +104,9 @@ export default function Home() {
           style={{
             width: "100%",
             padding: 12,
-            background: "#4CAF50",
+            background: "green",
             color: "white",
-            border: "none",
             borderRadius: 8,
-            fontSize: 16,
           }}
         >
           追加
@@ -117,77 +114,58 @@ export default function Home() {
       </div>
 
       {/* 合計 */}
-      <div
+      <h2
         style={{
           textAlign: "center",
-          fontSize: 24,
-          marginBottom: 10,
           color: total >= 0 ? "green" : "red",
         }}
       >
         合計: {total}円
-      </div>
+      </h2>
 
-      {/* 🔴 全削除ボタン */}
+      {/* 全削除 */}
       <button
         onClick={handleClearAll}
         style={{
           width: "100%",
           padding: 12,
-          marginBottom: 20,
-          background: "#ff6666",
+          background: "red",
           color: "white",
-          border: "none",
           borderRadius: 8,
-          fontSize: 16,
+          marginBottom: 20,
         }}
       >
         全て削除
       </button>
 
       {/* リスト */}
-      <div>
-        {[...items].reverse().map((item) => (
-          <div
-            key={item.id}
-            style={{
-              background: "white",
-              padding: 12,
-              borderRadius: 10,
-              marginBottom: 10,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            }}
-          >
-            <div
-              style={{
-                color: item.type === "income" ? "green" : "red",
-              }}
-            >
-              <div style={{ fontSize: 12 }}>{item.date}</div>
-              <div>
-                {item.type === "income" ? "収入" : "支出"}：
-                {item.text}
-              </div>
-              <div>{item.amount}円</div>
+      {[...items].reverse().map((item) => (
+        <div
+          key={item.id}
+          style={{
+            background: "#fff",
+            padding: 10,
+            marginBottom: 10,
+            borderRadius: 10,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ color: item.type === "income" ? "green" : "red" }}>
+            <div>{item.date}</div>
+            <div>
+              {item.type === "income" ? "収入" : "支出"}：{item.text}
             </div>
 
-            <button
-              onClick={() => handleDelete(item.id)}
-              style={{
-                background: "#ddd",
-                border: "none",
-                padding: "6px 10px",
-                borderRadius: 6,
-              }}
-            >
-              削除
-            </button>
+            {/* 🔴 カテゴリ表示 */}
+            <div>カテゴリ：{item.category}</div>
+
+            <div>{item.amount}円</div>
           </div>
-        ))}
-      </div>
+
+          <button onClick={() => handleDelete(item.id)}>削除</button>
+        </div>
+      ))}
     </div>
   );
 }
